@@ -78,27 +78,15 @@ const ParabolaCalculator = () => {
                     <div>
                         <label className="block text-sm font-medium text-slate-600 mb-1">Overs to be Bowled</label>
                         <div className="flex gap-2">
-                            <input
-                                type="number"
-                                min="20"
-                                max="50"
+                            <select
                                 value={team2Overs}
-                                onChange={(e) => {
-                                    const val = parseInt(e.target.value);
-                                    if (val >= 20 && val <= 50) {
-                                        setTeam2Overs(val);
-                                    } else if (e.target.value === '') {
-                                        setTeam2Overs(20);
-                                    }
-                                }}
-                                list="overs-list"
+                                onChange={(e) => setTeam2Overs(parseInt(e.target.value))}
                                 className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
-                            />
-                            <datalist id="overs-list">
+                            >
                                 {Array.from({ length: 31 }, (_, i) => i + 20).map(over => (
-                                    <option key={over} value={over} />
+                                    <option key={over} value={over}>{over}</option>
                                 ))}
-                            </datalist>
+                            </select>
                             <select
                                 value={team2Balls}
                                 onChange={(e) => setTeam2Balls(parseInt(e.target.value))}
