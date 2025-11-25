@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParabola } from '../hooks/useParabola';
-import { TrendingUp, Calculator, Info } from 'lucide-react';
+import { TrendingUp, Calculator, Info, RotateCcw } from 'lucide-react';
 
 const ParabolaCalculator = () => {
     const {
@@ -10,7 +10,8 @@ const ParabolaCalculator = () => {
         team2Balls, setTeam2Balls,
         target,
         norm1,
-        norm2
+        norm2,
+        reset
     } = useParabola();
 
     return (
@@ -19,10 +20,18 @@ const ParabolaCalculator = () => {
                 <div className="p-2 bg-purple-50 rounded-lg text-purple-600">
                     <TrendingUp size={24} />
                 </div>
-                <div>
+                <div className="flex-1">
                     <h2 className="text-xl font-bold text-slate-800">Parabola Method</h2>
                     <p className="text-sm text-slate-500">Target = (Norm2 / Norm1) × Score1</p>
                 </div>
+                <button
+                    onClick={reset}
+                    className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors"
+                    title="Reset to default values"
+                >
+                    <RotateCcw size={16} />
+                    Reset
+                </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -37,7 +46,8 @@ const ParabolaCalculator = () => {
                         <label className="block text-sm font-medium text-slate-600 mb-1">Runs Scored</label>
                         <input
                             type="number"
-                            value={team1Score}
+                            placeholder="0"
+                            value={team1Score || ''}
                             onChange={(e) => setTeam1Score(parseFloat(e.target.value) || 0)}
                             className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
                         />
@@ -68,15 +78,27 @@ const ParabolaCalculator = () => {
                     <div>
                         <label className="block text-sm font-medium text-slate-600 mb-1">Overs to be Bowled</label>
                         <div className="flex gap-2">
-                            <select
+                            <input
+                                type="number"
+                                min="20"
+                                max="50"
                                 value={team2Overs}
-                                onChange={(e) => setTeam2Overs(parseInt(e.target.value))}
+                                onChange={(e) => {
+                                    const val = parseInt(e.target.value);
+                                    if (val >= 20 && val <= 50) {
+                                        setTeam2Overs(val);
+                                    } else if (e.target.value === '') {
+                                        setTeam2Overs(20);
+                                    }
+                                }}
+                                list="overs-list"
                                 className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
-                            >
+                            />
+                            <datalist id="overs-list">
                                 {Array.from({ length: 31 }, (_, i) => i + 20).map(over => (
-                                    <option key={over} value={over}>{over}</option>
+                                    <option key={over} value={over} />
                                 ))}
-                            </select>
+                            </datalist>
                             <select
                                 value={team2Balls}
                                 onChange={(e) => setTeam2Balls(parseInt(e.target.value))}

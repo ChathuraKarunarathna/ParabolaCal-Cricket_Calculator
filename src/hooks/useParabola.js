@@ -2,10 +2,17 @@ import { useState, useMemo } from 'react';
 import { getParabolaNorm } from '../data/parabolaTable';
 
 export const useParabola = () => {
-  const [team1Score, setTeam1Score] = useState(250);
+  const [team1Score, setTeam1Score] = useState(0);
   const [team1Overs, setTeam1Overs] = useState(50);
-  const [team2Overs, setTeam2Overs] = useState(40);
+  const [team2Overs, setTeam2Overs] = useState(20);
   const [team2Balls, setTeam2Balls] = useState(0);
+
+  const reset = () => {
+    setTeam1Score(0);
+    setTeam1Overs(50);
+    setTeam2Overs(20);
+    setTeam2Balls(0);
+  };
 
   const calculation = useMemo(() => {
     const norm1 = getParabolaNorm(team1Overs, 0); // Team 1 usually completes overs or is all out (treated as full overs?)
@@ -41,6 +48,7 @@ export const useParabola = () => {
     team1Overs, setTeam1Overs,
     team2Overs, setTeam2Overs,
     team2Balls, setTeam2Balls,
+    reset,
     ...calculation
   };
 };
