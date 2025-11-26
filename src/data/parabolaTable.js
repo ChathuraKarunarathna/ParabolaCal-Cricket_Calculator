@@ -38,8 +38,18 @@ export const parabola50Table = {
     50: [225, 225, 225, 225, 225, 225]
 };
 
-// 30 Over Match Format
+// 30 Over Match Format (from 30 over sheet)
 export const parabola30Table = {
+    10: [69, 70, 71, 72, 73, 74],
+    11: [75, 76, 77, 78, 79, 80],
+    12: [81, 82, 83, 84, 85, 86],
+    13: [87, 88, 89, 90, 91, 92],
+    14: [93, 94, 95, 96, 97, 98],
+    15: [99, 100, 100, 101, 102, 103],
+    16: [104, 105, 106, 107, 108, 109],
+    17: [110, 111, 112, 112, 113, 114],
+    18: [115, 116, 117, 118, 119, 120],
+    19: [120, 121, 122, 123, 124, 125],
     20: [126, 126, 127, 128, 129, 130],
     21: [131, 131, 132, 133, 134, 135],
     22: [136, 136, 137, 138, 139, 140],
@@ -87,7 +97,7 @@ export const getParabolaNorm = (overs, balls = 0, format = 50) => {
         maxOvers = 50;
     } else if (format === 30) {
         table = parabola30Table;
-        minOvers = 20;
+        minOvers = 10;
         maxOvers = 30;
     } else if (format === 20) {
         table = parabola20Table;

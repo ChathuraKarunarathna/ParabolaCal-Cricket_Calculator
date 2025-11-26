@@ -15,7 +15,7 @@ export const useParabola = () => {
       setTeam2Overs(20);
     } else if (matchFormat === 30) {
       setTeam1Overs(30);
-      setTeam2Overs(20);
+      setTeam2Overs(10);
     } else if (matchFormat === 20) {
       setTeam1Overs(20);
       setTeam2Overs(5);
@@ -31,7 +31,7 @@ export const useParabola = () => {
       setTeam2Overs(20);
     } else if (newFormat === 30) {
       setTeam1Overs(30);
-      setTeam2Overs(20);
+      setTeam2Overs(10);
     } else if (newFormat === 20) {
       setTeam1Overs(20);
       setTeam2Overs(5);

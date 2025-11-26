@@ -21,11 +21,8 @@ const ParabolaCalculator = () => {
         if (matchFormat === 50) {
             return Array.from({ length: 31 }, (_, i) => i + 20); // 20-50
         } else if (matchFormat === 30) {
-            return Array.from({ length: 11 }, (_, i) => i + 20); // 20-30
+            return Array.from({ length: 21 }, (_, i) => i + 10); // 10-30
         } else if (matchFormat === 20) {
-            if (isTeam1) {
-                return Array.from({ length: 16 }, (_, i) => i + 5); // 5-20
-            }
             return Array.from({ length: 16 }, (_, i) => i + 5); // 5-20
         }
         return [];
