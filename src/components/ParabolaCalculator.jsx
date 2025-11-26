@@ -4,6 +4,8 @@ import { TrendingUp, Calculator, Info, RotateCcw } from 'lucide-react';
 
 const ParabolaCalculator = () => {
     const {
+        matchFormat,
+        setMatchFormat,
         team1Score, setTeam1Score,
         team1Overs, setTeam1Overs,
         team2Overs, setTeam2Overs,
@@ -13,6 +15,21 @@ const ParabolaCalculator = () => {
         norm2,
         reset
     } = useParabola();
+
+    // Get overs range based on format
+    const getOversRange = (isTeam1 = false) => {
+        if (matchFormat === 50) {
+            return Array.from({ length: 31 }, (_, i) => i + 20); // 20-50
+        } else if (matchFormat === 30) {
+            return Array.from({ length: 11 }, (_, i) => i + 20); // 20-30
+        } else if (matchFormat === 20) {
+            if (isTeam1) {
+                return Array.from({ length: 16 }, (_, i) => i + 5); // 5-20
+            }
+            return Array.from({ length: 16 }, (_, i) => i + 5); // 5-20
+        }
+        return [];
+    };
 
     return (
         <div className="max-w-2xl mx-auto p-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 transition-colors duration-300">
@@ -32,6 +49,43 @@ const ParabolaCalculator = () => {
                     <RotateCcw size={16} />
                     Reset
                 </button>
+            </div>
+
+            {/* Match Format Selector */}
+            <div className="mb-6">
+                <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Match Format</label>
+                <div className="flex gap-3">
+                    <button
+                        onClick={() => setMatchFormat(50)}
+                        className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+                            matchFormat === 50
+                                ? 'bg-purple-600 text-white'
+                                : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                        }`}
+                    >
+                        50 Overs
+                    </button>
+                    <button
+                        onClick={() => setMatchFormat(30)}
+                        className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+                            matchFormat === 30
+                                ? 'bg-purple-600 text-white'
+                                : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                        }`}
+                    >
+                        30 Overs
+                    </button>
+                    <button
+                        onClick={() => setMatchFormat(20)}
+                        className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+                            matchFormat === 20
+                                ? 'bg-purple-600 text-white'
+                                : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                        }`}
+                    >
+                        20 Overs
+                    </button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -60,7 +114,7 @@ const ParabolaCalculator = () => {
                             onChange={(e) => setTeam1Overs(parseInt(e.target.value))}
                             className="w-full px-4 py-2 border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
                         >
-                            {Array.from({ length: 31 }, (_, i) => i + 20).map(over => (
+                            {getOversRange(true).map(over => (
                                 <option key={over} value={over}>{over} Overs</option>
                             ))}
                         </select>
@@ -83,7 +137,7 @@ const ParabolaCalculator = () => {
                                 onChange={(e) => setTeam2Overs(parseInt(e.target.value))}
                                 className="w-full px-4 py-2 border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
                             >
-                                {Array.from({ length: 31 }, (_, i) => i + 20).map(over => (
+                                {getOversRange(false).map(over => (
                                     <option key={over} value={over}>{over}</option>
                                 ))}
                             </select>

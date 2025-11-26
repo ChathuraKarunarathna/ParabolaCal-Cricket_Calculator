@@ -1,14 +1,15 @@
 // Parabola Calculation Table Data
-// Based on the provided image.
+// Based on the official Parabola Chart for 50 over, 30 over, and 20 over matches
 // Keys: Overs (20-50). Values: Array of 6 numbers [Norm, Ball1, Ball2, Ball3, Ball4, Ball5]
 // Note: Ball 0 is the Norm for the full over.
 
-export const parabolaTable = {
+// 50 Over Match Format
+export const parabola50Table = {
     20: [126, 126, 127, 128, 129, 130],
     21: [131, 131, 132, 133, 134, 135],
     22: [136, 136, 137, 138, 139, 140],
     23: [140, 141, 142, 143, 143, 144],
-    24: [145, 145, 147, 147, 148, 149],
+    24: [145, 146, 147, 147, 148, 149],
     25: [150, 150, 151, 152, 153, 153],
     26: [154, 155, 156, 156, 157, 158],
     27: [158, 159, 160, 161, 161, 162],
@@ -37,12 +38,70 @@ export const parabolaTable = {
     50: [225, 225, 225, 225, 225, 225]
 };
 
-export const getParabolaNorm = (overs, balls = 0) => {
-    // Handle edge cases
-    if (overs < 20) return 0; // Or handle as error/interpolation? Table starts at 20.
-    if (overs > 50) return 225; // Cap at 50
+// 30 Over Match Format
+export const parabola30Table = {
+    20: [126, 126, 127, 128, 129, 130],
+    21: [131, 131, 132, 133, 134, 135],
+    22: [136, 136, 137, 138, 139, 140],
+    23: [140, 141, 142, 143, 143, 144],
+    24: [145, 146, 147, 147, 148, 149],
+    25: [150, 150, 151, 152, 153, 153],
+    26: [154, 155, 156, 156, 157, 158],
+    27: [158, 159, 160, 161, 161, 162],
+    28: [163, 163, 164, 165, 165, 166],
+    29: [167, 167, 168, 169, 169, 170],
+    30: [171, 171, 172, 173, 173, 174]
+};
 
-    const row = parabolaTable[overs];
+// 20 Over Match Format
+export const parabola20Table = {
+    5: [46, 47, 49, 50, 52, 53],
+    6: [55, 56, 58, 59, 60, 62],
+    7: [63, 65, 66, 68, 69, 70],
+    8: [72, 73, 74, 76, 77, 78],
+    9: [80, 81, 82, 84, 85, 86],
+    10: [88, 89, 90, 91, 92, 93],
+    11: [94, 95, 96, 98, 99, 100],
+    12: [101, 102, 103, 104, 105, 106],
+    13: [107, 108, 109, 110, 111, 112],
+    14: [113, 114, 115, 116, 117, 118],
+    15: [119, 120, 120, 121, 122, 123],
+    16: [123, 124, 125, 126, 126, 127],
+    17: [128, 128, 129, 130, 130, 131],
+    18: [132, 132, 133, 134, 134, 135],
+    19: [136, 136, 137, 138, 139, 139],
+    20: [140, 140, 140, 140, 140, 140]
+};
+
+// Default table (backward compatibility)
+export const parabolaTable = parabola50Table;
+
+export const getParabolaNorm = (overs, balls = 0, format = 50) => {
+    // Select the appropriate table based on format
+    let table;
+    let minOvers, maxOvers;
+    
+    if (format === 50) {
+        table = parabola50Table;
+        minOvers = 20;
+        maxOvers = 50;
+    } else if (format === 30) {
+        table = parabola30Table;
+        minOvers = 20;
+        maxOvers = 30;
+    } else if (format === 20) {
+        table = parabola20Table;
+        minOvers = 5;
+        maxOvers = 20;
+    } else {
+        return 0; // Invalid format
+    }
+
+    // Handle edge cases
+    if (overs < minOvers) return 0;
+    if (overs > maxOvers) return table[maxOvers][0];
+
+    const row = table[overs];
     if (!row) return 0;
 
     // balls should be 0-5

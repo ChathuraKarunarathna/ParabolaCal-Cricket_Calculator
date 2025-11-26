@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { getParabolaNorm } from '../data/parabolaTable';
 
 export const useParabola = () => {
+  const [matchFormat, setMatchFormat] = useState(50);
   const [team1Score, setTeam1Score] = useState(0);
   const [team1Overs, setTeam1Overs] = useState(50);
   const [team2Overs, setTeam2Overs] = useState(20);
@@ -9,31 +10,44 @@ export const useParabola = () => {
 
   const reset = () => {
     setTeam1Score(0);
-    setTeam1Overs(50);
-    setTeam2Overs(20);
+    if (matchFormat === 50) {
+      setTeam1Overs(50);
+      setTeam2Overs(20);
+    } else if (matchFormat === 30) {
+      setTeam1Overs(30);
+      setTeam2Overs(20);
+    } else if (matchFormat === 20) {
+      setTeam1Overs(20);
+      setTeam2Overs(5);
+    }
+    setTeam2Balls(0);
+  };
+
+  // Update overs when format changes
+  const handleFormatChange = (newFormat) => {
+    setMatchFormat(newFormat);
+    if (newFormat === 50) {
+      setTeam1Overs(50);
+      setTeam2Overs(20);
+    } else if (newFormat === 30) {
+      setTeam1Overs(30);
+      setTeam2Overs(20);
+    } else if (newFormat === 20) {
+      setTeam1Overs(20);
+      setTeam2Overs(5);
+    }
     setTeam2Balls(0);
   };
 
   const calculation = useMemo(() => {
-    const norm1 = getParabolaNorm(team1Overs, 0); // Team 1 usually completes overs or is all out (treated as full overs?)
-    // If Team 1 is all out, usually their score is taken as is, but the Norm might still be based on overs available?
-    // The formula says "Norm for Team Batting 1st". Usually this implies the overs they were *allotted*.
-
-    const norm2 = getParabolaNorm(team2Overs, team2Balls);
+    const norm1 = getParabolaNorm(team1Overs, 0, matchFormat);
+    const norm2 = getParabolaNorm(team2Overs, team2Balls, matchFormat);
 
     if (norm1 === 0) return { target: 0, norm1, norm2 };
 
     const ratio = norm2 / norm1;
     const targetFloat = team1Score * ratio;
-    const target = Math.ceil(targetFloat); // "Decimals to be rounded up to the next whole number"
-
-    // Tie logic: "01 Run less than the given target score means the side batting second has lost"
-    // So Target is the winning score.
-    // If Target is 200, 199 is loss. 200 is win? 
-    // "The winning score... is the given score and there is NO TIED MATCHES"
-    // Usually in cricket: Target to win = Par Score + 1.
-    // The text says "The winning score... is the given score".
-    // So if formula gives 200.2 -> Round up to 201. 201 is the winning score.
+    const target = Math.ceil(targetFloat);
 
     return {
       target,
@@ -41,9 +55,11 @@ export const useParabola = () => {
       norm2,
       ratio
     };
-  }, [team1Score, team1Overs, team2Overs, team2Balls]);
+  }, [team1Score, team1Overs, team2Overs, team2Balls, matchFormat]);
 
   return {
+    matchFormat,
+    setMatchFormat: handleFormatChange,
     team1Score, setTeam1Score,
     team1Overs, setTeam1Overs,
     team2Overs, setTeam2Overs,
