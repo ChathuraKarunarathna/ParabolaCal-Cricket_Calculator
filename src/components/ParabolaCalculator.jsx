@@ -1,6 +1,9 @@
 import React from 'react';
 import { useParabola } from '../hooks/useParabola';
-import { TrendingUp, Calculator, Info, RotateCcw } from 'lucide-react';
+import { getParabolaNorm } from '../data/parabolaTable';
+import { TrendingUp, Calculator, Info, RotateCcw, Download } from 'lucide-react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const ParabolaCalculator = () => {
     const {
@@ -26,6 +29,81 @@ const ParabolaCalculator = () => {
             return Array.from({ length: 16 }, (_, i) => i + 5); // 5-20
         }
         return [];
+    };
+
+    // Generate PDF with overs bowled and targets
+    const generatePDF = () => {
+        const doc = new jsPDF();
+        
+        // Add title
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Parabola Method - Target Calculator', 105, 20, { align: 'center' });
+        
+        // Add match format
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Match Format: ${matchFormat} Overs`, 20, 35);
+        
+        // Add Team 1 info
+        doc.setFont('helvetica', 'bold');
+        doc.text('Team 1 (Batting 1st):', 20, 45);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Runs Scored: ${team1Score}`, 20, 52);
+        doc.text(`Overs Allotted: ${team1Overs}`, 20, 59);
+        
+        // Generate table data for all possible overs (over by over, no balls)
+        const tableData = [];
+        const oversRange = getOversRange(false);
+        
+        oversRange.forEach(overs => {
+            const norm2Value = getParabolaNorm(overs, 0, matchFormat);
+            if (norm1 > 0) {
+                const ratio = norm2Value / norm1;
+                const calculatedTarget = Math.ceil(team1Score * ratio);
+                tableData.push([overs, calculatedTarget]);
+            }
+        });
+        
+        // Add table using autoTable
+        autoTable(doc, {
+            startY: 70,
+            head: [['Overs Bowled', 'Target']],
+            body: tableData,
+            theme: 'grid',
+            headStyles: { 
+                fillColor: [147, 51, 234],
+                textColor: 255,
+                fontStyle: 'bold',
+                halign: 'center'
+            },
+            styles: {
+                fontSize: 10,
+                cellPadding: 4,
+                halign: 'center'
+            },
+            columnStyles: {
+                0: { cellWidth: 60 },
+                1: { cellWidth: 60 }
+            }
+        });
+        
+        // Add footer
+        const pageCount = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'italic');
+            doc.text(
+                `Generated on ${new Date().toLocaleDateString()} - Page ${i} of ${pageCount}`,
+                105,
+                doc.internal.pageSize.height - 10,
+                { align: 'center' }
+            );
+        }
+        
+        // Download the PDF
+        doc.save(`Parabola_Target_${matchFormat}over_${new Date().toISOString().split('T')[0]}.pdf`);
     };
 
     return (
@@ -184,6 +262,19 @@ const ParabolaCalculator = () => {
                         No tied matches allowed.
                     </p>
                 </div>
+            </div>
+
+            {/* Download PDF Button */}
+            <div className="mt-6 flex justify-center">
+                <button
+                    onClick={generatePDF}
+                    disabled={team1Score === 0}
+                    className="flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 disabled:bg-slate-400 disabled:cursor-not-allowed text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all"
+                    title={team1Score === 0 ? 'Please enter Team 1 score first' : 'Download Target Table PDF'}
+                >
+                    <Download size={20} />
+                    Download Target Table PDF
+                </button>
             </div>
         </div>
     );
