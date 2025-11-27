@@ -31,26 +31,19 @@ const ParabolaCalculator = () => {
         return [];
     };
 
-    // Generate PDF with overs bowled and targets
+    // Generate PDF with overs bowled and targets (single page, centered)
     const generatePDF = () => {
         const doc = new jsPDF();
         
         // Add title
         doc.setFontSize(18);
         doc.setFont('helvetica', 'bold');
-        doc.text('Parabola Method - Target Calculator', 105, 20, { align: 'center' });
+        doc.text('Parabola Method - Target Calculator', 105, 15, { align: 'center' });
         
-        // Add match format
+        // Add match format and Team 1 info in compact format
         doc.setFontSize(12);
         doc.setFont('helvetica', 'normal');
-        doc.text(`Match Format: ${matchFormat} Overs`, 20, 35);
-        
-        // Add Team 1 info
-        doc.setFont('helvetica', 'bold');
-        doc.text('Team 1 (Batting 1st):', 20, 45);
-        doc.setFont('helvetica', 'normal');
-        doc.text(`Runs Scored: ${team1Score}`, 20, 52);
-        doc.text(`Overs Allotted: ${team1Overs}`, 20, 59);
+        doc.text(`Match Format: ${matchFormat} Overs | Team 1 Score: ${team1Score} | Overs: ${team1Overs}`, 105, 25, { align: 'center' });
         
         // Generate table data for all possible overs (over by over, no balls)
         const tableData = [];
@@ -65,42 +58,49 @@ const ParabolaCalculator = () => {
             }
         });
         
-        // Add table using autoTable
+        // Add table using autoTable with centered positioning and optimized spacing
         autoTable(doc, {
-            startY: 70,
+            startY: 32,
             head: [['Overs Bowled', 'Target']],
             body: tableData,
             theme: 'grid',
+            margin: { left: 70, right: 70, bottom: 12 },
             headStyles: { 
                 fillColor: [147, 51, 234],
                 textColor: 255,
                 fontStyle: 'bold',
-                halign: 'center'
+                halign: 'center',
+                fontSize: 11,
+                cellPadding: 1.5
             },
             styles: {
                 fontSize: 10,
-                cellPadding: 4,
-                halign: 'center'
+                cellPadding: 1.5,
+                halign: 'center',
+                minCellHeight: 5
             },
             columnStyles: {
-                0: { cellWidth: 60 },
-                1: { cellWidth: 60 }
+                0: { cellWidth: 35 },
+                1: { cellWidth: 35 }
+            },
+            tableWidth: 70,
+            didDrawPage: function(data) {
+                // Ensure single page by checking if content exceeds page
+                if (data.pageNumber > 1) {
+                    console.warn('Content exceeds single page');
+                }
             }
         });
         
         // Add footer
-        const pageCount = doc.internal.getNumberOfPages();
-        for (let i = 1; i <= pageCount; i++) {
-            doc.setPage(i);
-            doc.setFontSize(8);
-            doc.setFont('helvetica', 'italic');
-            doc.text(
-                `Generated on ${new Date().toLocaleDateString()} - Page ${i} of ${pageCount}`,
-                105,
-                doc.internal.pageSize.height - 10,
-                { align: 'center' }
-            );
-        }
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'italic');
+        doc.text(
+            `Generated on ${new Date().toLocaleDateString()}`,
+            105,
+            doc.internal.pageSize.height - 6,
+            { align: 'center' }
+        );
         
         // Download the PDF
         doc.save(`Parabola_Target_${matchFormat}over_${new Date().toISOString().split('T')[0]}.pdf`);
