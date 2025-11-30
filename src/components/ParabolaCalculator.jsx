@@ -92,11 +92,22 @@ const ParabolaCalculator = () => {
             }
         });
         
-        // Add footer
+        // Add footer with watermark
         doc.setFontSize(9);
         doc.setFont('helvetica', 'italic');
         doc.text(
             `Generated on ${new Date().toLocaleDateString()}`,
+            105,
+            doc.internal.pageSize.height - 12,
+            { align: 'center' }
+        );
+        
+        // Add watermark
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        doc.setFont('helvetica', 'normal');
+        doc.text(
+            '© ParabolaCal - Cricket Score Calculator',
             105,
             doc.internal.pageSize.height - 6,
             { align: 'center' }
